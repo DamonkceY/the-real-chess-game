@@ -1,0 +1,17 @@
+* {
+    margin: unset;
+    padding: unset;
+    box-sizing: border-box;
+
+    body {
+        position: relative;
+        overflow: hidden;
+    }
+
+    #app {
+        width: 100vw;
+        height: 100vh;
+        background-color: gray;
+        position: absolute;
+    }
+}

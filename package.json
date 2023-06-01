@@ -1,0 +1,16 @@
+{
+  "name": "the-real-chess-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "vite --host",
+    "build": "tsc && vite build"
+  },
+  "devDependencies": {
+    "prettier": "^2.8.8",
+    "sass": "^1.62.1",
+    "typescript": "^5.0.2",
+    "vite": "^4.3.9"
+  }
+}
