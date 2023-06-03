@@ -1,3 +1,3 @@
-import ChessEngine from "./src/gameEngine";
+import GraphicsEngine from './src/graphicsEngine';
 
-console.log(ChessEngine.getInstance().getBoard())
+GraphicsEngine.getInstance();
