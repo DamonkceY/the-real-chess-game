@@ -46,7 +46,7 @@ class GraphicsEngine {
 			const loadImage = (piece: PieceCodeName) => {
 				index++;
 				const img = new Image();
-				img.src = `src/assets/pieces/${piece}.svg`;
+				img.src = new URL(`/src/assets/pieces/${piece}.svg`, import.meta.url).href;
 				img.onload = () => {
 					AssetsMapper.PiecesImages[piece] = img;
 					if (pieces[index]) {
