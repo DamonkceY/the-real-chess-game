@@ -8,11 +8,20 @@ class GraphicsEngine {
 	private chessEngineInstance: ChessEngine;
 	private canvasRef: HTMLCanvasElement;
 	private canvasCtx: CanvasRenderingContext2D;
+	private previousWidth: number = NaN;
 
 	private constructor() {
 		this.chessEngineInstance = ChessEngine.getInstance();
 		this.canvasRef = document.querySelector('#GAME_CANVAS') as HTMLCanvasElement;
 		this.canvasCtx = this.canvasRef.getContext('2d') as CanvasRenderingContext2D;
+
+		window.addEventListener('resize', () => {
+			const currentCanvasWidth = this.canvasRef.clientWidth * window.devicePixelRatio
+			
+			void(this.previousWidth !== currentCanvasWidth && this.prepareGraphics());
+
+			this.previousWidth = currentCanvasWidth;
+		});
 
 		this.loadAssets()
 			.then(() => {
