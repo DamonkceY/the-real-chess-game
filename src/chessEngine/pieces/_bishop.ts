@@ -1,15 +1,24 @@
 import Piece from './index.ts';
 import { initialPiecesPosition } from '../utils/initialPiecesPosition.ts';
+import { PieceColor } from '../entitites/pieces.entities.ts';
+import { piecesMovementDirections } from '../utils/piecesMovementDirections.ts';
 
 class Bishop extends Piece {
+	protected isRecursiveMovement = true;
+	protected pieceMovementACC = piecesMovementDirections.B;
+
 	protected defaultPositions = {
-		B: initialPiecesPosition.B_B,
-		W: initialPiecesPosition.W_B,
+		B_: initialPiecesPosition.B_B,
+		W_: initialPiecesPosition.W_B,
 	};
 
-	constructor(color: 'W' | 'B', position?: number) {
-		super(`${color}_B`);
+	constructor(color: PieceColor, position?: number) {
+		super(`${color}B`);
 		this.setDefaultPos(color, position);
+	}
+
+	protected getAccCondition(acc: number): boolean {
+		return false;
 	}
 }
 

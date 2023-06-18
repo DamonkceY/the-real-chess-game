@@ -1,4 +1,5 @@
 import { AssetsMapperType } from '../entities/assetsMapper.entities.ts';
+import { PieceCodeName } from '../../chessEngine/entitites/pieces.entities.ts';
 
 export const AssetsMapper: AssetsMapperType = {
 	PiecesImages: {
@@ -15,4 +16,28 @@ export const AssetsMapper: AssetsMapperType = {
 		B_K: undefined,
 		W_K: undefined,
 	},
+};
+
+export const loadAssets = () => {
+	return new Promise((resolve, reject) => {
+		const pieces = Object.keys(AssetsMapper.PiecesImages) as Array<PieceCodeName>;
+		let index: number = 0;
+		const loadImage = (piece: PieceCodeName) => {
+			index++;
+			const img: HTMLImageElement = new Image();
+			img.src = new URL(`/src/assets/pieces/${piece}.svg`, import.meta.url).href;
+			img.onload = () => {
+				AssetsMapper.PiecesImages[piece] = img;
+				if (pieces[index]) {
+					loadImage(pieces[index]);
+				} else {
+					resolve(true);
+				}
+			};
+			img.onerror = () => {
+				reject(false);
+			};
+		};
+		loadImage(pieces[index]);
+	});
 };
