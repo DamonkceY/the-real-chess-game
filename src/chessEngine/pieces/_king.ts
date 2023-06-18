@@ -1,15 +1,24 @@
 import Piece from './index.ts';
 import { initialPiecesPosition } from '../utils/initialPiecesPosition.ts';
+import { PieceColor } from '../entitites/pieces.entities.ts';
+import { piecesMovementDirections } from '../utils/piecesMovementDirections.ts';
 
 class King extends Piece {
+	protected isRecursiveMovement = false;
+	protected pieceMovementACC = piecesMovementDirections.K;
+
 	protected defaultPositions = {
-		B: initialPiecesPosition.B_K,
-		W: initialPiecesPosition.W_K,
+		B_: initialPiecesPosition.B_K,
+		W_: initialPiecesPosition.W_K,
 	};
 
-	constructor(color: 'W' | 'B', position?: number) {
-		super(`${color}_K`);
+	constructor(color: PieceColor, position?: number) {
+		super(`${color}K`);
 		this.setDefaultPos(color, position);
+	}
+
+	protected getAccCondition(acc: number): boolean {
+		return false;
 	}
 }
 

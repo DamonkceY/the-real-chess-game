@@ -1,7 +1,6 @@
 import ChessEngine from '../chessEngine';
 import { getRowColFromPos } from '../chessEngine/utils/commonFuncs.ts';
-import { AssetsMapper } from './utils/assetsMapper.ts';
-import { PieceCodeName } from '../chessEngine/entitites/pieces.entities.ts';
+import { AssetsMapper, loadAssets } from './utils/assetsMapper.ts';
 
 class GraphicsEngine {
 	private static Instance: GraphicsEngine;
@@ -15,15 +14,7 @@ class GraphicsEngine {
 		this.canvasRef = document.querySelector('#GAME_CANVAS') as HTMLCanvasElement;
 		this.canvasCtx = this.canvasRef.getContext('2d') as CanvasRenderingContext2D;
 
-		window.addEventListener('resize', () => {
-			const currentCanvasWidth = this.canvasRef.clientWidth * window.devicePixelRatio
-			
-			void(this.previousWidth !== currentCanvasWidth && this.prepareGraphics());
-
-			this.previousWidth = currentCanvasWidth;
-		});
-
-		this.loadAssets()
+		loadAssets()
 			.then(() => {
 				this.prepareGraphics();
 			})
@@ -39,35 +30,26 @@ class GraphicsEngine {
 		return this.Instance;
 	}
 
-	private loadAssets() {
-		return new Promise((resolve, reject) => {
-			const pieces = Object.keys(AssetsMapper.PiecesImages) as Array<PieceCodeName>;
-			let index: number = 0;
-			const loadImage = (piece: PieceCodeName) => {
-				index++;
-				const img = new Image();
-				img.src = new URL(`/src/assets/pieces/${piece}.svg`, import.meta.url).href;
-				img.onload = () => {
-					AssetsMapper.PiecesImages[piece] = img;
-					if (pieces[index]) {
-						loadImage(pieces[index]);
-					} else {
-						resolve(true);
-					}
-				};
-				img.onerror = () => {
-					reject(false);
-				};
-			};
-			loadImage(pieces[index]);
-		});
-	}
-
-	public prepareGraphics(): void {
+	private prepareGraphics(noListeners?: boolean): void {
 		this.canvasRef.width = this.canvasRef.clientWidth * window.devicePixelRatio;
 		this.canvasRef.height = this.canvasRef.clientHeight * window.devicePixelRatio;
 
-		this.gameLoop();
+		if (!noListeners) {
+			this.setupListeners();
+			this.gameLoop();
+		}
+	}
+
+	private setupListeners(): void {
+		window.addEventListener('resize', () => {
+			const currentCanvasWidth = this.canvasRef.clientWidth * window.devicePixelRatio;
+			void (this.previousWidth !== currentCanvasWidth && this.prepareGraphics(true));
+			this.previousWidth = currentCanvasWidth;
+		});
+
+		this.canvasRef.addEventListener('mousedown', (event: MouseEvent) => {
+			this.chessEngineInstance.receiveEvent(this.getRowColFromEvent(event));
+		});
 	}
 
 	private gameLoop(): void {
@@ -90,8 +72,29 @@ class GraphicsEngine {
 						squareWidth,
 					);
 				}
+				if (this.chessEngineInstance.getHighlightedSquares().includes(_col.position)) {
+					this.canvasCtx.beginPath();
+					this.canvasCtx.fillStyle = '#38ad56';
+					this.canvasCtx.arc(
+						squareWidth * col + squareWidth / 2,
+						squareWidth * row + squareWidth / 2,
+						squareWidth / 6,
+						0,
+						2 * Math.PI,
+					);
+					this.canvasCtx.fill();
+				}
 			});
 		});
+	}
+
+	private getRowColFromEvent(event: MouseEvent): { row: number; col: number } {
+		return {
+			row: Math.trunc(
+				event.offsetY / ((this.canvasRef.height + 0.1) / window.devicePixelRatio / 8),
+			),
+			col: Math.trunc(event.offsetX / ((this.canvasRef.width + 0.1) / window.devicePixelRatio / 8)),
+		};
 	}
 }
 
